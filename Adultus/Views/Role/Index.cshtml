@@ -1,0 +1,25 @@
+﻿@using Adultus.ViewModels
+
+@model LayoutViewModel
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+@Styles.Render("~/Content/css")
+<table class="table">
+    @foreach (var role in Model.Roles)
+    {
+        <tr>
+            <th>
+                @Html.DisplayFor(model => role.Id)
+            </th>
+            <th>
+                @Html.DisplayFor(model => role.name)
+            </th>
+        </tr>
+    }
+</table>
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/bootstrap")
