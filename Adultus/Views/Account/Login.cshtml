@@ -1,0 +1,64 @@
+﻿@using Adultus.Models
+
+@model Users
+@{
+    ViewBag.Title = "Logon";
+    Layout = null;
+}
+
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Logon</title>
+    @Styles.Render("~/bundles/css")
+</head>
+<body>
+    <div class="login-dark">
+        <section id="loginForm">
+            @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+            {
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                <div class="form-group">
+                    @Html.TextBoxFor(m => m.UserName, new { @class = "form-control login-dark-text", @placeholder = "Email or Username" })
+                    @Html.ValidationMessageFor(m => m.UserName, "", new { @class = "text-danger" })
+                </div>
+                <div class="form-group">
+                    @Html.PasswordFor(m => m.Password, new { @class = "form-control login-dark-text", @placeholder = "Password" })
+                    @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Log in" class="btn btn-primary btn-block" />
+                    @Html.ActionLink("Register", "Register", "Account", new { @class = "btn  btn-block btn-success" })
+                </div>
+                if (Model != null)
+                {
+                    if (Model.UserName == "error")
+                    {
+                        <span>Incorrect username or password</span>
+                    }
+                    if (Model.UserName == "Already Confirmed")
+                    {
+                        <span>Already Confirmed</span>
+                    }
+                }
+                if (ViewBag.Items != null)
+                {
+                    foreach (var p in ViewBag.Items)
+                    {
+                        <span>@p</span>
+                    }
+                }
+                <a href="#" class="forgot">Forgot your email or password?</a>
+            }
+        </section>
+    </div>
+</body>
+</html>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/jquery.min.js")
+    @Scripts.Render("~/bundles/bootstrap.min.js")
+}

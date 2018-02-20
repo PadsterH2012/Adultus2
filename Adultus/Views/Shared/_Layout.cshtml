@@ -1,0 +1,229 @@
+﻿@using System.Collections
+@using Adultus.Models
+@using Adultus.ViewModels
+@using Microsoft.Ajax.Utilities
+
+@model LayoutViewModel
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@ViewBag.Title</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.0.min.js"></script>
+    <!-- Bootstrap -->
+    <link href="@Url.Content("~/css/bootstrap.css")" rel="stylesheet">
+    <link href="@Url.Content("~/css/jumbotron-narrow.css")" rel="stylesheet">
+    @Styles.Render("~/bundles/css")
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <script>
+
+        function closeNav() {
+            if (document.getElementById("closebtn").style.top === "12%") {
+                document.getElementById("mySidenav").style.width = "50px";
+                document.getElementById("body").style.marginRight = "56%";
+                document.getElementById("body").style.left = "-50%";
+                document.getElementById("closebtn").style.left = "-3%";
+                document.getElementById("closebtn").style.top = "10%";
+            } else {
+                document.getElementById("mySidenav").style.width = "250px";
+                document.getElementById("body").style.marginRight = "48%";
+                document.getElementById("closebtn").style.left = "0%";
+                document.getElementById("closebtn").style.top = "12%";
+            }
+        }
+
+        $(document).ready(function () {
+            var trigger = $('.hamburger'),
+                overlay = $('.overlay'),
+                isClosed = false;
+
+            trigger.click(function () {
+                hamburger_cross();
+            });
+
+            function hamburger_cross() {
+
+                if (isClosed == true) {
+                    overlay.hide();
+                    trigger.removeClass('is-open');
+                    trigger.addClass('is-closed');
+                    isClosed = false;
+                } else {
+                    overlay.show();
+                    trigger.removeClass('is-closed');
+                    trigger.addClass('is-open');
+                    isClosed = true;
+                }
+            }
+
+            $('[data-toggle="offcanvas"]').click(function () {
+                $('#wrapper').toggleClass('toggled');
+            });
+        });
+    </script>
+</head>
+    <body>
+    <div class="container">
+        <div class="header">
+            
+            <h3 class="text-muted">@ViewBag.Title</h3>
+        </div>
+    </div>
+    
+    <div id="userSearch" style="float: right;text-align: right">
+        <textarea></textarea>
+    </div>
+    <div id="wrapper">
+        <div class="overlay"></div>
+
+        <!-- Sidebar -->
+        <nav class="navbar navbar-inverse navbar-fixed-top" id="sidebar-wrapper" role="navigation">
+            <ul class="nav sidebar-nav">
+                <li class="sidebar-brand">
+                    <a href="#">
+                        Brand
+                    </a>
+                </li>
+                <li>
+                    <a href="#">Home</a>
+                </li>
+                <li>
+                    <a href="#">About</a>
+                </li>
+                <li>
+                    <a href="#">Contact</a>
+                </li>
+                @{
+                    int p = 0;
+                    foreach (var role in Model.ProfileRoles)
+                    {
+                        if (role.RoleId == "8cdc013e-d73d-4687-8112-38d65fca158f")
+                        {
+                            p = 1;
+                        }
+                    }
+                    if (p == 1)
+                    {
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Profiles <span class="caret"></span></a>
+                            <ul class="dropdown-menu" role="menu">
+                                <li class="dropdown-header">Dropdown heading</li>
+                                <li>@Html.ActionLink("Profiles", "Index", "Profile", null, new { @class = "page-scroll" })</li>
+                                <li>@Html.ActionLink("Create Profiles", "Create", "Profile", null, new {@class = "page-scroll"})</li>
+                                <li>@Html.ActionLink("Edit Profiles", "Edit", "Profile", null, new {@class = "page-scroll"})</li>
+                            </ul>
+                        </li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Roles <span class="caret"></span></a>
+                            <ul class="dropdown-menu" role="menu">
+                                <li class="dropdown-header">Dropdown heading</li>
+                                <li>@Html.ActionLink("Roles", "Index", "Role", null, new {@class = "page-scroll"})</li>
+                                <li>@Html.ActionLink("Create Roles", "Create", "Role", null, new {@class = "page-scroll"})</li>
+                                <li>@Html.ActionLink("Edit Roles", "Edit", "Role", null, new {@class = "page-scroll"})</li>
+                            </ul>
+                        </li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Profile Roles <span class="caret"></span></a>
+                            <ul class="dropdown-menu" role="menu">
+                                <li class="dropdown-header">Dropdown heading</li>
+                                <li>@Html.ActionLink("Profile Roles", "Index", "ProfileRole", null, new { @class = "page-scroll" })</li>
+                                <li>@Html.ActionLink("Create Profile Roles", "Create", "ProfileRole", null, new {@class = "page-scroll"})</li>
+                                <li>@Html.ActionLink("Edit Profile Roles", "Edit", "ProfileRole", null, new {@class = "page-scroll"})</li>
+                            </ul>
+                        </li>
+                    }
+                }
+                <li>
+                    <a href="#">Users</a>
+                </li>
+            </ul>
+        </nav>
+        <!-- /#sidebar-wrapper -->
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <button type="button" class="hamburger is-closed" data-toggle="offcanvas">
+                <span class="hamb-top"></span>
+                <span class="hamb-middle"></span>
+                <span class="hamb-bottom"></span>
+            </button>
+            <div class="container">
+                @RenderBody()
+            </div>
+        </div>
+        <!-- /#page-content-wrapper -->
+    </div>
+    <div class="footer">
+        <p>&copy; Company 2018</p>
+    </div>
+        <!-- /#wrapper -->    
+        
+        
+        
+        
+
+    @*<div class="wrapper">
+        <div id="mySidenav" class="sidenav" style="width: 250px;float: left;">
+            <a href="javascript:void(0)" id="closebtn" class="closebtn" onclick="closeNav()">&times;</a>
+            <a href="#">Home</a>
+            <a href="#">About</a>
+            <a href="#">Contact</a>
+            @{
+                IEnumerable<ProfileRoles> profileRoles = new List<ProfileRoles>();
+                ProfileRoles profileRole = new ProfileRoles();
+
+
+                try
+                {
+                    profileRoles = Model.ProfileRoles.Where(x => x.RoleId == "8cdc013e-d73d-4687-8112-38d65fca158f").ToList();
+                    profileRole = profileRoles.Where(x => x.ProfileId == Model.User.ProfileId).Single();
+                }
+                catch
+                {
+
+                }
+                if (profileRole != null)
+                {
+                    @Html.ActionLink("Profiles", "Index", "Profile", null, new {@class = "page-scroll"})
+                    ;
+                    @Html.ActionLink("Create Profiles", "Create", "Profile", null, new {@class = "page-scroll"})
+                    ;
+                    @Html.ActionLink("Edit Profiles", "Edit", "Profile", null, new {@class = "page-scroll"})
+                    ;
+                    @Html.ActionLink("Roles", "Index", "Role", null, new {@class = "page-scroll"})
+                    ;
+                    @Html.ActionLink("Create Roles", "Create", "Role", null, new {@class = "page-scroll"})
+                    ;
+                    @Html.ActionLink("Edit Roles", "Edit", "Role", null, new {@class = "page-scroll"})
+                    ;
+                    @Html.ActionLink("Profile Roles", "Index", "ProfileRole", null, new {@class = "page-scroll"})
+                    ;
+                    @Html.ActionLink("Create Profile Roles", "Create", "ProfileRole", null, new {@class = "page-scroll"})
+                    ;
+                    @Html.ActionLink("Edit Profile Roles", "Edit", "ProfileRole", null, new {@class = "page-scroll"})
+                    ;
+                }
+            }
+            <a href="#">Users</a>
+        </div>
+        @RenderBody()
+    </div>
+        <div class="footer">
+            <p>&copy; Company 2018</p>
+        </div>*@
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.0.min.js"></script>
+            <script src="@Url.Content("~/js/bootstrap.js")"></script>
+    @section Scripts {
+        @Scripts.Render("~/bundles/jqueryval")
+        @Scripts.Render("~/bundles/jquery.min.js")
+        @Scripts.Render("~/bundles/bootstrap.min.js")
+    }
+</body>
+</html>

@@ -1,0 +1,14 @@
+﻿@using Adultus.ViewModels
+
+@model LayoutViewModel
+@Styles.Render("~/Content/css")
+<div class="homerow">
+    @foreach (var user in Model.Users)
+    {
+        <div class="col-md-2">
+            <img src="@Url.Content("~/img/bob.jpg")" alt="Image"/>
+            @Html.DisplayFor(model => user.UserName)
+            @Html.DisplayFor(model => user.OnlineStatus)
+        </div>
+    }
+</div>

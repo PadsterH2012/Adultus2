@@ -1,0 +1,30 @@
+﻿@using Adultus.ViewModels
+
+@model LayoutViewModel
+
+@{
+    ViewBag.Title = "Edit";
+}
+
+<h2>Edit</h2>
+@Styles.Render("~/Content/css")
+<table class="table">
+    @foreach (var profileRole in Model.ProfileRoles)
+    {
+        <tr>
+            <th>
+                @Html.DisplayFor(model => profileRole.Id)
+            </th>
+            <th>
+                @Html.DisplayFor(model => profileRole.ProfileId)
+            </th>
+            <th>
+                @Html.DisplayFor(model => profileRole.RoleId)
+            </th>
+        </tr>
+    }
+</table>
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/bootstrap")
+
+

@@ -1,0 +1,35 @@
+﻿@using Adultus.Models
+
+@model Verification
+@{
+    ViewBag.Title = "Verification";
+    Layout = null;
+}
+@Styles.Render("~/bundles/css")
+<link href="http://code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.min.css" rel="stylesheet" type="text/css" />
+<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+<script src="http://code.jquery.com/ui/1.10.4/jquery-ui.min.js"></script>
+<!-- Code to wire up your DatePicker -->
+<script type="text/javascript">
+    $(function () {
+        // This will make every element with the class "date-picker" into a DatePicker element
+        $('.date-picker').datepicker();
+    })
+</script>
+<h2>Verification</h2>
+<div class="form-group login-dark">
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    @*<div class="editor-label">
+        @Html.LabelFor(model => model.DateOfBirth)
+        @Html.Label("*", new {id = "star", @class = "requiredFiledCol"})
+    </div>
+    <div class="editor-field">
+        @Html.TextBoxFor(model => model.DateOfBirth, "{0:dd/MM/yyyy}", new {@class = "form-control date-picker", placeholder = "DD/MM/YYYY", maxlength = "100"})
+        @Html.ValidationMessageFor(model => model.DateOfBirth)
+    </div>*@
+    @Html.ActionLink("Are you over 18?", "Login", "Account", new { @class = "btn  btn-block btn-success" })
+
+}
+</div>
