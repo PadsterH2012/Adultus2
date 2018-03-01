@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Security;
 using Adultus.Helpers;
 using Adultus.Models;
 using Adultus.ViewModels;
@@ -18,13 +19,49 @@ namespace Adultus.Controllers
         {
             SqlHelper.DbContext();
 
-            return View(layoutViewModel.LayoutViewModelAllProfilesBuilder(Session["UserId"].ToString()));
+            var userId = Session["UserId"].ToString();
+            Users user = SqlHelper.GetUser(userId);
+
+            HttpCookie cookie = FormsAuthentication.GetAuthCookie(user.UserName, true);
+            var ticket = FormsAuthentication.Decrypt(cookie.Value);
+
+            FormsAuthenticationTicket authTicket = new
+                FormsAuthenticationTicket(1, //version
+                    ticket.Name,
+                    DateTime.Now,             //creation
+                    DateTime.Now.AddMinutes(60), //Expiration
+                    true, "");
+            // Encrypt the ticket.
+            string encTicket = FormsAuthentication.Encrypt(authTicket);
+
+            // Create the cookie.
+            Response.Cookies.Add(new HttpCookie(FormsAuthentication.FormsCookieName, encTicket));
+
+            return View(layoutViewModel.LayoutViewModelAllProfilesBuilder(userId));
         }
 
         public ActionResult Create()
         {
             var userId = Session["UserId"].ToString();
             var profileId = Session["ProfileId"].ToString();
+
+            SqlHelper.DbContext();
+            Users user = SqlHelper.GetUser(userId);
+
+            HttpCookie cookie = FormsAuthentication.GetAuthCookie(user.UserName, true);
+            var ticket = FormsAuthentication.Decrypt(cookie.Value);
+
+            FormsAuthenticationTicket authTicket = new
+                FormsAuthenticationTicket(1, //version
+                    ticket.Name,
+                    DateTime.Now,             //creation
+                    DateTime.Now.AddMinutes(60), //Expiration
+                    true, "");
+            // Encrypt the ticket.
+            string encTicket = FormsAuthentication.Encrypt(authTicket);
+
+            // Create the cookie.
+            Response.Cookies.Add(new HttpCookie(FormsAuthentication.FormsCookieName, encTicket));
 
             return View(layoutViewModel.LayoutViewModelBuilder(profileId, userId));
         }
@@ -49,9 +86,26 @@ namespace Adultus.Controllers
         public ActionResult Edit()
         {
             var userId = Session["UserId"].ToString();
-            var profileId = Session["ProfileId"].ToString();
 
-            return View(layoutViewModel.LayoutViewModelBuilder(profileId, userId));
+            SqlHelper.DbContext();
+            Users user = SqlHelper.GetUser(userId);
+
+            HttpCookie cookie = FormsAuthentication.GetAuthCookie(user.UserName, true);
+            var ticket = FormsAuthentication.Decrypt(cookie.Value);
+
+            FormsAuthenticationTicket authTicket = new
+                FormsAuthenticationTicket(1, //version
+                    ticket.Name,
+                    DateTime.Now,             //creation
+                    DateTime.Now.AddMinutes(60), //Expiration
+                    true, "");
+            // Encrypt the ticket.
+            string encTicket = FormsAuthentication.Encrypt(authTicket);
+
+            // Create the cookie.
+            Response.Cookies.Add(new HttpCookie(FormsAuthentication.FormsCookieName, encTicket));
+
+            return View(layoutViewModel.LayoutViewModelAllProfilesBuilder(userId));
         }
 
         // POST: userinfoes/Edit/5
@@ -61,15 +115,23 @@ namespace Adultus.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit(FormCollection collection)
         {
-            Profiles profile = new Profiles();
-            profile.Id = collection["Id"];
-            profile.name = collection["Name"];
+            var userId = Session["UserId"].ToString();
             if (ModelState.IsValid)
             {
-                SqlHelper.EditProfile(profile.Id, profile.name);
+                
+            SqlHelper.DbContext();
+            List<Profiles> profiles = SqlHelper.GetAllProfiles();
+            for(var i = 0; i < profiles.Count; i++)
+            {
+                string updateProfile = collection["Profiles[" + i + "].name"];
+                    if (profiles[i].name != updateProfile)
+                {
+                    SqlHelper.EditProfile(profiles[i].Id, updateProfile);
+                }
+            }
                 return RedirectToAction("Index");
             }
-            return View(profile);
+            return View(layoutViewModel.LayoutViewModelAllProfilesBuilder(userId));
         }
     }
 }

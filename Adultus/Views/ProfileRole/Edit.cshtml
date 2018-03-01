@@ -1,4 +1,5 @@
-﻿@using Adultus.ViewModels
+﻿@using Adultus.Models
+@using Adultus.ViewModels
 
 @model LayoutViewModel
 
@@ -8,22 +9,32 @@
 
 <h2>Edit</h2>
 @Styles.Render("~/Content/css")
-<table class="table">
-    @foreach (var profileRole in Model.ProfileRoles)
-    {
-        <tr>
-            <th>
-                @Html.DisplayFor(model => profileRole.Id)
-            </th>
-            <th>
-                @Html.DisplayFor(model => profileRole.ProfileId)
-            </th>
-            <th>
-                @Html.DisplayFor(model => profileRole.RoleId)
-            </th>
-        </tr>
-    }
-</table>
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    for(var i = 0; i< Model.ProfileRoles.Count;i++){
+     <div class="form-group">
+         @Html.LabelFor(model => model.ProfileRoles.First().ProfileName, htmlAttributes: new {@class = "control-label col-md-2"})
+         <div class="col-md-10">
+             @Html.EditorFor(x => Model.ProfileRoles[i].ProfileName)
+             @Html.ValidationMessageFor(model => model.ProfileRoles.First().ProfileName, "", new {@class = "text-danger"})
+         </div>
+     </div>
+     <div class="form-group">
+         @Html.LabelFor(model => model.ProfileRoles.First().RoleName, htmlAttributes: new {@class = "control-label col-md-2"})
+         <div class="col-md-10">
+             @Html.EditorFor(x => Model.ProfileRoles[i].RoleName)
+             @Html.ValidationMessageFor(model => model.ProfileRoles.First().RoleName, "", new {@class = "text-danger"})
+         </div>
+     </div>
+ }
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Save" class="btn btn-default"/>
+        </div>
+    </div>
+}
 @Scripts.Render("~/bundles/jquery")
 @Scripts.Render("~/bundles/bootstrap")
 

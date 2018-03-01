@@ -77,9 +77,19 @@
         </div>
     </div>
     
-    <div id="userSearch" style="float: right;text-align: right">
-        <textarea></textarea>
-    </div>
+    @using (Html.BeginForm("Search", "Home"))
+    {
+        <div style="float: right">
+            <p>
+                Name  : @Html.TextBox("SearchName")<br />
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input type="submit" value="Search" class="btn btn-default" />
+                    </div>
+                </div>
+            </p>
+        </div>
+    }
     <div id="wrapper">
         <div class="overlay"></div>
 
@@ -92,7 +102,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="#">Home</a>
+                    @Html.ActionLink("Home", "Index", "Home", null, new { @class = "page-scroll" })
                 </li>
                 <li>
                     <a href="#">About</a>
@@ -141,7 +151,7 @@
                     }
                 }
                 <li>
-                    <a href="#">Users</a>
+                    @Html.ActionLink("User Profile", "UserProfile", "Account", null, new { @class = "page-scroll" })
                 </li>
             </ul>
         </nav>

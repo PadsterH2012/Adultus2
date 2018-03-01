@@ -18,13 +18,15 @@
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         @Html.HiddenFor(model => model.Roles.First().Id)
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.Roles.First().name, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Roles, "BootstrapSelect", new { selectList = new SelectList(Model.Roles.First().name, "Id", "Name") })
-                @Html.ValidationMessageFor(model => model.Roles.First().name, "", new { @class = "text-danger" })
+        @for(var i = 0; i< Model.Roles.Count;i++){
+            <div class="form-group">
+                @Html.LabelFor(model => model.Roles.First().name, htmlAttributes: new {@class = "control-label col-md-2"})
+                <div class="col-md-10">
+                    @Html.EditorFor(x => Model.Roles[i].name)
+                    @Html.ValidationMessageFor(model => model.Roles.First().name, "", new {@class = "text-danger"})
+                </div>
             </div>
-        </div>
+        }
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <input type="submit" value="Save" class="btn btn-default" />

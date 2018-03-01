@@ -1,12 +1,17 @@
-﻿@using Adultus.ViewModels
+﻿@using Adultus.Models
+@using Adultus.ViewModels
 
 @model LayoutViewModel
+@{
+    ViewBag.Title = "Search";
+}
+
 @Styles.Render("~/Content/css")
 <div class="homerow">
     @foreach (var user in Model.Users)
     {
         <div class="col-md-2">
-            <img src="@Url.Content("~/img/" + user.ProfilePic)" alt="Image"/>
+            <img src="@Url.Content("~/img/" + user.ProfilePic)" alt="Image" />
             @Html.DisplayFor(model => user.UserName)
             @Html.DisplayFor(model => user.OnlineStatus)
         </div>

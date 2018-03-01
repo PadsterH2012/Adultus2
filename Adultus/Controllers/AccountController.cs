@@ -39,9 +39,10 @@ namespace Adultus.Controllers
         public async Task<ActionResult> Login(Users model, string returnUrl)
         {
             SqlHelper.DbContext();
-            if (model.ConfirmPassword == "0")
+            Users userSetUp = SqlHelper.LoginQuery(model.UserName, model.Password, false);
+            if (userSetUp.EmailConfirmed == false)
             {
-                Users userSetUp = SqlHelper.LoginQuery(model.UserName, model.Password, false);
+               // Users userSetUp = SqlHelper.LoginQuery(model.UserName, model.Password, false);
                 //ADD BASE 64 FOR ENCRYPTING PASSWORD WITH A HASH THERE IS A COLUMN FOR THE HAS ALREADY IN THE USER TABLE
                 if (userSetUp.Id != null)
                 {
@@ -70,6 +71,25 @@ namespace Adultus.Controllers
                 Session["UserName"] = user.UserName;
                 Session["UserId"] = user.Id;
                 Session["ProfileId"] = user.ProfileId;
+
+                FormsAuthenticationTicket authTicket = new
+                    FormsAuthenticationTicket(1, //version
+                        user.UserName, 
+                        DateTime.Now,             //creation
+                        DateTime.Now.AddMinutes(15), //Expiration
+                true, "");
+                // Encrypt the ticket.
+                string encTicket = FormsAuthentication.Encrypt(authTicket);
+
+                // Create the cookie.
+                System.Web.HttpContext.Current.Response.Cookies.Add(new HttpCookie(FormsAuthentication.FormsCookieName, encTicket));
+
+                var ctx = System.Web.HttpContext.Current;
+                ctx.Session[user.UserName] = "login";
+
+                FormsAuthentication.GetRedirectUrl(user.UserName, true);
+
+                //List<FormsAuthenticationTicket> tickets =  GetAllActiveUserTickets(SqlHelper.GetAllActiveUser());
                 return RedirectToAction("Index", "Home");
             }
             model.UserName = "error";
@@ -108,8 +128,17 @@ namespace Adultus.Controllers
         public static string RandomString(int length)
         {
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            return new string(Enumerable.Repeat(chars, length)
-                .Select(s => s[random.Next(s.Length)]).ToArray());
+
+            var randChars = Enumerable.Repeat(chars, length)
+                .Select(s => s[random.Next(s.Length)]).ToArray();
+
+            var randomIns = new Random();
+
+            randChars[randomIns.Next(randChars.Length)] = "0123456789"[randomIns.Next(10)];
+
+            randChars[randomIns.Next(randChars.Length)] = "!@?*£$%&^+"[randomIns.Next(10)];
+
+            return new string(randChars);
         }
 
         //
@@ -124,7 +153,7 @@ namespace Adultus.Controllers
             {
                 var newGuid = Guid.NewGuid().ToString();
                 SqlHelper.AddUser(newGuid, model.UserName, model.EmailAddress, model.DateOfBirth);
-                var rand = RandomString(8);
+                var rand = RandomString(12);
                 SqlHelper.SetPassword(rand, newGuid, false);
                 EmailService emailService = new EmailService();
                 emailService.SendConfirmationEmail(newGuid);
@@ -197,6 +226,24 @@ namespace Adultus.Controllers
             var userId = Session["UserId"].ToString();
             var profileId = Session["ProfileId"].ToString();
 
+            SqlHelper.DbContext();
+            Users user = SqlHelper.GetUser(userId);
+
+            HttpCookie cookie = FormsAuthentication.GetAuthCookie(user.UserName, true);
+            var ticket = FormsAuthentication.Decrypt(cookie.Value);
+
+            FormsAuthenticationTicket authTicket = new
+                FormsAuthenticationTicket(1, //version
+                    ticket.Name,
+                    DateTime.Now,             //creation
+                    DateTime.Now.AddMinutes(60), //Expiration
+                    true, "");
+            // Encrypt the ticket.
+            string encTicket = FormsAuthentication.Encrypt(authTicket);
+
+            // Create the cookie.
+            Response.Cookies.Add(new HttpCookie(FormsAuthentication.FormsCookieName, encTicket));
+
             return View(layoutViewModel.LayoutViewModelUserBuilder(profileId, userId));
             //return View("SetPassword");
         }
@@ -231,6 +278,52 @@ namespace Adultus.Controllers
             }
 
             return View("SetPassword", layoutViewModel.LayoutViewModelUserBuilder(profileId, userId));
+        }
+
+        [AllowAnonymous]
+        public ActionResult UserProfile()
+        {
+            var userId = Session["UserId"].ToString();
+            var profileId = Session["ProfileId"].ToString();
+
+            SqlHelper.DbContext();
+            Users user = SqlHelper.GetUser(userId);
+
+            HttpCookie cookie = FormsAuthentication.GetAuthCookie(user.UserName, true);
+            var ticket = FormsAuthentication.Decrypt(cookie.Value);
+
+            FormsAuthenticationTicket authTicket = new
+                FormsAuthenticationTicket(1, //version
+                    ticket.Name,
+                    DateTime.Now,             //creation
+                    DateTime.Now.AddMinutes(60), //Expiration
+                    true, "");
+            // Encrypt the ticket.
+            string encTicket = FormsAuthentication.Encrypt(authTicket);
+
+            // Create the cookie.
+            Response.Cookies.Add(new HttpCookie(FormsAuthentication.FormsCookieName, encTicket));
+
+            FormsAuthentication.GetRedirectUrl(user.UserName, true);
+
+
+            return View(layoutViewModel.LayoutViewModelUserBuilder(profileId, userId));
+        }
+
+        //
+        // POST: /Account/Register
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult UserProfile(FormCollection collection)
+        {
+            var userId = Session["UserId"].ToString();
+            var profileId = Session["ProfileId"].ToString();
+            if (!ModelState.IsValid)
+            {
+                return View("UserProfile");
+            }
+
+            return View("UserProfile", layoutViewModel.LayoutViewModelUserBuilder(profileId, userId));
         }
 
         //[AllowAnonymous]
@@ -278,6 +371,22 @@ namespace Adultus.Controllers
         {
             var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
             return System.Convert.ToBase64String(plainTextBytes);
+        }
+
+        public List<FormsAuthenticationTicket> GetAllActiveUserTickets(List<Users> users)
+        {
+            //SqlHelper.DbContext();
+            //List<Users> users = SqlHelper.GetAllActiveUser();
+            List<FormsAuthenticationTicket> formsAuthenticationTickets = new List<FormsAuthenticationTicket>();
+            foreach (Users u in users)
+            {
+                var FormsAuthCookie = System.Web.HttpContext.Current.Response.Cookies[u.UserName];
+                var ExistingTicket = FormsAuthentication.Decrypt(FormsAuthCookie.Value);
+
+                formsAuthenticationTickets.Add(ExistingTicket);
+            }
+
+            return formsAuthenticationTickets;
         }
     }
 }

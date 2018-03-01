@@ -22,8 +22,7 @@ namespace Adultus.ViewModels
         public LayoutViewModel LayoutViewModelBuilder(string profileId, string userId)
         {
             SqlHelper.DbContext();
-            //Using aspnetclaim rules to store roles which have been manually inputted
-            //NOT ADDED BY IDS
+
             List<ProfileRoles> profileRoles = new List<ProfileRoles>();
             profileRoles = SqlHelper.GetProfileRoles(profileId);
 
@@ -32,6 +31,37 @@ namespace Adultus.ViewModels
 
             List<Users> users = new List<Users>();
             users = SqlHelper.GetAllUsers();
+
+            List<Roles> roles = new List<Roles>();
+            roles = SqlHelper.GetAllRoles();
+
+            List<Profiles> profiles = new List<Profiles>();
+            Profiles p = new Profiles();
+            p = SqlHelper.GetProfile(profileId);
+            profiles.Add(p);
+
+            return new LayoutViewModel
+            {
+                ProfileRoles = profileRoles,
+                User = user,
+                Users = users,
+                Profiles = profiles,
+                Roles = roles
+            };
+        }
+
+        public LayoutViewModel LayoutViewModelUserSearchBuilder(string profileId, string userId, string searchText)
+        {
+            SqlHelper.DbContext();
+
+            List<ProfileRoles> profileRoles = new List<ProfileRoles>();
+            profileRoles = SqlHelper.GetProfileRoles(profileId);
+
+            Users user = new Users();
+            user = SqlHelper.GetUser(userId);
+
+            List<Users> users = new List<Users>();
+            users = SqlHelper.UserSearch(searchText);
 
             List<Roles> roles = new List<Roles>();
             roles = SqlHelper.GetAllRoles();
@@ -54,8 +84,7 @@ namespace Adultus.ViewModels
         public LayoutViewModel LayoutViewModelUserBuilder(string profileId, string userId)
         {
             SqlHelper.DbContext();
-            //Using aspnetclaim rules to store roles which have been manually inputted
-            //NOT ADDED BY IDS
+
             List<ProfileRoles> profileRoles = new List<ProfileRoles>();
             profileRoles = SqlHelper.GetProfileRoles(profileId);
 
@@ -78,8 +107,7 @@ namespace Adultus.ViewModels
         public LayoutViewModel LayoutViewModelUsersBuilder(string profileId, string userId)
         {
             SqlHelper.DbContext();
-            //Using aspnetclaim rules to store roles which have been manually inputted
-            //NOT ADDED BY IDS
+
             List<ProfileRoles> profileRoles = new List<ProfileRoles>();
             profileRoles = SqlHelper.GetProfileRoles(profileId);
 
@@ -103,13 +131,12 @@ namespace Adultus.ViewModels
             };
         }
 
-        public LayoutViewModel LayoutViewModelProfileRolesBuilder(string profileId, string userId)
+        public LayoutViewModel LayoutViewModelAllProfileRolesBuilder(string userId)
         {
             SqlHelper.DbContext();
-            //Using aspnetclaim rules to store roles which have been manually inputted
-            //NOT ADDED BY IDS
+
             List<ProfileRoles> profileRoles = new List<ProfileRoles>();
-            profileRoles = SqlHelper.GetProfileRoles(profileId);
+            profileRoles = SqlHelper.GetAllProfileRoles();
 
             Users user = new Users();
             user = SqlHelper.GetUser(userId);
@@ -118,6 +145,31 @@ namespace Adultus.ViewModels
             {
                 ProfileRoles = profileRoles,
                 User = user
+            };
+        }
+
+        public LayoutViewModel LayoutViewModelProfileRolesBuilder(string userId)
+        {
+            SqlHelper.DbContext();
+
+            List<ProfileRoles> profileRoles = new List<ProfileRoles>();
+            profileRoles = SqlHelper.GetAllProfileRoles();
+
+            List<Profiles> profiles = new List<Profiles>();
+            profiles = SqlHelper.GetAllProfiles();
+
+            List<Roles> roles = new List<Roles>();
+            roles = SqlHelper.GetAllRoles();
+
+            Users user = new Users();
+            user = SqlHelper.GetUser(userId);
+
+            return new LayoutViewModel
+            {
+                ProfileRoles = profileRoles,
+                User = user,
+                Roles = roles,
+                Profiles = profiles
             };
         }
 
@@ -131,10 +183,14 @@ namespace Adultus.ViewModels
             List<Roles> roles = new List<Roles>();
             roles = SqlHelper.GetAllRoles();
 
+            List<ProfileRoles> profileRoles = new List<ProfileRoles>();
+            profileRoles = SqlHelper.GetProfileRoles(user.ProfileId);
+
             return new LayoutViewModel
             {
                 User = user,
-                Roles = roles
+                Roles = roles,
+                ProfileRoles = profileRoles
             };
         }
 
@@ -148,10 +204,14 @@ namespace Adultus.ViewModels
             List<Profiles> profiles = new List<Profiles>();
             profiles = SqlHelper.GetAllProfiles();
 
+            List<ProfileRoles> profileRoles = new List<ProfileRoles>();
+            profileRoles = SqlHelper.GetProfileRoles(user.ProfileId);
+
             return new LayoutViewModel
             {
                 User = user,
-                Profiles = profiles
+                Profiles = profiles,
+                ProfileRoles = profileRoles
             };
         }
     }

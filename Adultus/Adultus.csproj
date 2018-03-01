@@ -138,6 +138,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Helpers\EmailService.cs" />
+    <Compile Include="Helpers\Schedules.cs" />
     <Compile Include="Helpers\SqlHelper.cs" />
     <Compile Include="Models\LoginSessions.cs" />
     <Compile Include="Models\ProfileRoles.cs" />
@@ -197,6 +198,8 @@
     <None Include="Properties\PublishProfiles\Ragthorn - Alpha.pubxml" />
     <Content Include="Views\Account\Confirm.cshtml" />
     <Content Include="Views\Account\SetPassword.cshtml" />
+    <Content Include="Views\Account\UserProfile.cshtml" />
+    <Content Include="Views\Home\Search.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
